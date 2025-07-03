@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>課題リマインダー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>課題リマインダー</h1>
+    <form id="reminderForm">
+      <label>課題名:<br>
+        <input type="text" id="title" required>
+      </label><br>
+      <label>提出日程:<br>
+        <input type="datetime-local" id="dueDate" required>
+      </label><br>
+      <label>追加メモ:<br>
+        <input type="text" id="memo">
+      </label><br>
+      <button type="submit">追加</button>
+    </form>
+    <h2>登録済み課題</h2>
+    <table id="reminderTable">
+      <thead>
+        <tr><th>課題名</th><th>提出日程</th><th>追加メモ</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <p class="note">※リマインド通知を受け取るには、ブラウザの通知を許可してください。</p>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>

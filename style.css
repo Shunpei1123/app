@@ -1,0 +1,67 @@
+body {
+  font-family: 'Segoe UI', 'Meiryo', sans-serif;
+  background: #f7f7fa;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 30px 24px 24px 24px;
+}
+h1 {
+  text-align: center;
+  color: #2d3a4b;
+}
+form {
+  margin-bottom: 24px;
+}
+label {
+  display: block;
+  margin-bottom: 10px;
+  color: #333;
+}
+input[type="text"], input[type="datetime-local"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+}
+button {
+  background: #4f8cff;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #346fd1;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+th, td {
+  border: 1px solid #e0e0e0;
+  padding: 8px;
+  text-align: left;
+}
+th {
+  background: #f0f4fa;
+}
+.note {
+  color: #888;
+  font-size: 0.95em;
+  margin-top: 18px;
+  text-align: center;
+}
