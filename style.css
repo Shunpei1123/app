@@ -1,98 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Zen+Kaku+Gothic+New:wght@500&display=swap');
 body {
-  font-family: 'Segoe UI', 'Meiryo', sans-serif;
-  background: linear-gradient(135deg, #e0f7fa 0%, #b3c6e7 100%);
+  font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
+  background: linear-gradient(120deg, #d0f1fa 0%, #e0e7fa 50%, #b3e0f7 100%);
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  animation: fadein-bg 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes fadein-bg {
+  from { filter: blur(12px) brightness(0.8); }
+  to { filter: blur(0) brightness(1); }
 }
 .container {
-  max-width: 520px;
-  margin: 48px auto;
-  background: rgba(255,255,255,0.92);
-  border-radius: 18px;
-  box-shadow: 0 6px 32px rgba(60,120,180,0.13);
-  padding: 36px 28px 28px 28px;
-  border: 1.5px solid #b3e0f7;
-  backdrop-filter: blur(2px);
+  max-width: 540px;
+  margin: 56px auto 32px auto;
+  background: rgba(255,255,255,0.93);
+  border-radius: 22px;
+  box-shadow: 0 8px 36px 0 rgba(100,180,220,0.13);
+  padding: 44px 32px 32px 32px;
+  border: 2px solid #b3e0f7;
+  backdrop-filter: blur(3px);
+  position: relative;
+  animation: slidein-container 1.1s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes slidein-container {
+  from { transform: translateY(60px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 h1 {
   text-align: center;
-  color: #1976d2;
-  letter-spacing: 0.08em;
+  color: #3a7bd5;
+  letter-spacing: 0.09em;
   margin-bottom: 18px;
-  text-shadow: 0 2px 8px #b3c6e7;
+  text-shadow: 0 2px 12px #b3e0f7;
+  font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
+  font-weight: 700;
+  font-size: 2.1em;
+  animation: fadein-title 1.2s cubic-bezier(.4,0,.2,1);
 }
-form {
+
+@keyframes fadein-title {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
   margin-bottom: 28px;
+  animation: fadein-form 1.3s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes fadein-form {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 label {
   display: block;
   margin-bottom: 12px;
-  color: #1565c0;
-  font-weight: 500;
+  color: #3a7bd5;
+  font-weight: 600;
+  font-family: 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
+  letter-spacing: 0.03em;
 }
 input[type="text"], input[type="datetime-local"] {
   width: 100%;
-  padding: 10px;
+  padding: 11px;
   margin-top: 5px;
-  margin-bottom: 12px;
-  border: 1.5px solid #90caf9;
-  border-radius: 6px;
-  font-size: 1em;
-  background: #f0f7fa;
+  margin-bottom: 14px;
+  border: 1.7px solid #b3e0f7;
+  border-radius: 8px;
+  font-size: 1.07em;
+  background: #eaf6fb;
   transition: border 0.2s, box-shadow 0.2s;
+  font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
 }
 input[type="text"]:focus, input[type="datetime-local"]:focus {
-  border: 1.5px solid #1976d2;
+  border: 1.7px solid #3a7bd5;
   outline: none;
   box-shadow: 0 0 0 2px #b3e0f7;
 }
 button {
-  background: linear-gradient(90deg, #1976d2 60%, #64b5f6 100%);
+  background: linear-gradient(90deg, #3a7bd5 60%, #b3e0f7 100%);
   color: #fff;
   border: none;
-  padding: 11px 28px;
-  border-radius: 6px;
-  font-size: 1em;
-  font-weight: 600;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 1.08em;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px #b3c6e7;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 2px 12px #b3e0f7;
+  font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
+  letter-spacing: 0.04em;
 }
 button:hover {
-  background: linear-gradient(90deg, #1565c0 60%, #4fc3f7 100%);
-  box-shadow: 0 4px 16px #b3c6e7;
+  background: linear-gradient(90deg, #1976d2 60%, #64b5f6 100%);
+  box-shadow: 0 6px 20px #b3e0f7;
+  transform: translateY(-2px) scale(1.03);
 }
 table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  margin-top: 12px;
-  background: rgba(240,247,250,0.95);
-  border-radius: 10px;
+  margin-top: 16px;
+  background: rgba(230,245,255,0.97);
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px #b3c6e7;
+  box-shadow: 0 2px 12px #b3e0f7;
+  animation: fadein-table 1.5s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes fadein-table {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 th, td {
   border: none;
-  padding: 10px 8px;
+  padding: 12px 10px;
   text-align: left;
+  font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
 }
 th {
   background: #b3e0f7;
-  color: #1565c0;
-  font-weight: 600;
-  font-size: 1.05em;
+  color: #3a7bd5;
+  font-weight: 700;
+  font-size: 1.08em;
+  letter-spacing: 0.03em;
 }
 td {
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.88);
   color: #2d3a4b;
-  font-size: 1em;
+  font-size: 1.01em;
 }
 .note {
-  color: #1976d2;
-  font-size: 0.98em;
-  margin-top: 22px;
+  color: #3a7bd5;
+  font-size: 1.01em;
+  margin-top: 28px;
   text-align: center;
   background: none;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+  font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
+}
+
+/* --- 猫イラスト --- */
+.cat-illust {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 110px;
+  z-index: 2;
+  animation: cat-pop 1.5s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes cat-pop {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.7) translateY(-30px); }
+  60% { opacity: 1; transform: translateX(-50%) scale(1.1) translateY(10px); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
 }
