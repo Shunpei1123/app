@@ -126,6 +126,11 @@ function showNotification(reminder) {
 
 document.getElementById('reminderForm').addEventListener('submit', addReminder);
 
+// --- 繰り返しステータスの初期表示を必ず反映 ---
+window.addEventListener('DOMContentLoaded', () => {
+  if (typeof updateRepeatStatus === 'function') updateRepeatStatus();
+});
+
 // 初期化
 loadReminders();
 renderTable();
