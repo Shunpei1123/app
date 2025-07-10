@@ -1,3 +1,27 @@
+/* 画面内通知 */
+.inpage-notify {
+  position: fixed;
+  right: 24px;
+  bottom: 32px;
+  min-width: 260px;
+  max-width: 90vw;
+  background: #eaf6fb;
+  color: #1976d2;
+  border: 2px solid #b3e0f7;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px #b3e0f7;
+  padding: 18px 22px 16px 22px;
+  font-size: 1.08em;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.4s, transform 0.4s;
+  pointer-events: none;
+}
+.inpage-notify.show {
+  opacity: 1;
+  transform: translateY(0);
+}
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Zen+Kaku+Gothic+New:wght@500&display=swap');
 body {
   font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;

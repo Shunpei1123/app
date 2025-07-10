@@ -51,15 +51,16 @@ function addReminder(e) {
   document.getElementById('repeatSelect').style.display = 'none';
 }
 
-// 1日前の通知をスケジューリング
+// 1日前の通知と当日通知をブラウザ内で管理
 function scheduleNotification(reminder) {
+  // 1日前通知
   const due = new Date(reminder.dueDate);
   const remindTime = new Date(due.getTime() - 24 * 60 * 60 * 1000);
   const now = new Date();
   if (remindTime > now) {
     const timeout = remindTime.getTime() - now.getTime();
     setTimeout(() => {
-      showNotification(reminder);
+      showNotification(reminder, '【リマインド】課題提出1日前');
       // 繰り返し設定がある場合は次回分を自動追加
       if (reminder.repeat && reminder.repeat !== 'none') {
         let nextDue = new Date(reminder.dueDate);
@@ -73,6 +74,13 @@ function scheduleNotification(reminder) {
         scheduleNotification(newReminder);
       }
     }, timeout);
+  }
+  // 当日通知
+  if (due > now) {
+    const timeout2 = due.getTime() - now.getTime();
+    setTimeout(() => {
+      showNotification(reminder, '【リマインド】課題提出当日');
+    }, timeout2);
   }
 }
 // 繰り返しボタンの挙動
@@ -115,13 +123,31 @@ function scheduleAllNotifications() {
   reminders.forEach(scheduleNotification);
 }
 
-// 通知を表示
-function showNotification(reminder) {
+// 通知を表示（ブラウザ内通知）
+function showNotification(reminder, title) {
   if (window.Notification && Notification.permission === 'granted') {
-    new Notification('【リマインド】課題提出1日前', {
+    new Notification(title || '【リマインド】課題提出1日前', {
       body: `課題名: ${reminder.title}\n提出日程: ${reminder.dueDate.replace('T', ' ')}\nメモ: ${reminder.memo || ''}`
     });
+  } else {
+    // ブラウザ通知が許可されていない場合は画面上に表示
+    showInPageNotification(title || '【リマインド】課題提出1日前', reminder);
   }
+}
+
+// 画面内通知
+function showInPageNotification(title, reminder) {
+  let n = document.createElement('div');
+  n.className = 'inpage-notify';
+  n.innerHTML = `<strong>${title}</strong><br>課題名: ${reminder.title}<br>提出日程: ${reminder.dueDate.replace('T', ' ')}<br>メモ: ${reminder.memo || ''}`;
+  document.body.appendChild(n);
+  setTimeout(() => {
+    n.classList.add('show');
+    setTimeout(() => {
+      n.classList.remove('show');
+      setTimeout(() => n.remove(), 500);
+    }, 6000);
+  }, 100);
 }
 
 document.getElementById('reminderForm').addEventListener('submit', addReminder);
