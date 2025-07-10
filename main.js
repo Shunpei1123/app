@@ -78,35 +78,36 @@ function scheduleNotification(reminder) {
 // 繰り返しボタンの挙動
 const repeatBtn = document.getElementById('repeatBtn');
 const repeatSelect = document.getElementById('repeatSelect');
-if (repeatBtn && repeatSelect) {
+const repeatStatus = document.getElementById('repeatStatus');
+const repeatTextMap = {
+  none: 'しない',
+  daily: '毎日',
+  weekly: '毎週',
+  yearly: '毎年'
+};
+function updateRepeatStatus() {
+  if (repeatStatus && repeatSelect) {
+    const val = repeatSelect.value;
+    repeatStatus.textContent = `【${repeatTextMap[val]}】`;
+  }
+}
+if (repeatBtn && repeatSelect && repeatStatus) {
   repeatBtn.addEventListener('click', () => {
     if (repeatSelect.style.display === 'none' || repeatSelect.style.display === '') {
       repeatSelect.style.display = 'inline-block';
-      repeatSelect.disabled = false;
       repeatSelect.focus();
     } else {
       repeatSelect.style.display = 'none';
-      repeatSelect.disabled = true;
     }
   });
-  // セレクトボックスが表示されたら選択可能に
-  repeatSelect.addEventListener('blur', () => {
-    // 何も選ばずにフォーカス外れたら閉じる
-    setTimeout(() => {
-      if (document.activeElement !== repeatSelect) {
-        repeatSelect.style.display = 'none';
-        repeatSelect.disabled = true;
-      }
-    }, 200);
-  });
-  // 選択したら自動で閉じる
+  // 選択したら自動で閉じる＋表示更新
   repeatSelect.addEventListener('change', () => {
     repeatSelect.style.display = 'none';
-    repeatSelect.disabled = true;
+    updateRepeatStatus();
   });
-  // 初期状態は非表示・無効
+  // 初期状態は非表示＋表示
   repeatSelect.style.display = 'none';
-  repeatSelect.disabled = true;
+  updateRepeatStatus();
 }
 
 // すべてのリマインダーの通知を再スケジューリング
