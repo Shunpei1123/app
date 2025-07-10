@@ -24,6 +24,15 @@
       <label>追加メモ:<br>
         <input type="text" id="memo">
       </label><br>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <button type="button" id="repeatBtn" style="background:#b0b4b8;color:#fff;font-size:0.98em;padding:8px 18px;border-radius:6px;border:none;cursor:pointer;letter-spacing:0.03em;">繰り返し</button>
+        <select id="repeatSelect" style="display:none;margin-left:8px;padding:7px 12px;border-radius:6px;border:1.2px solid #b3e0f7;font-size:0.98em;">
+          <option value="none">しない</option>
+          <option value="daily">毎日</option>
+          <option value="weekly">毎週</option>
+          <option value="yearly">毎年</option>
+        </select>
+      </div>
       <button type="submit">＋追加</button>
     </form>
     <h2>登録済み課題</h2>
