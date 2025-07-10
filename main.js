@@ -80,8 +80,33 @@ const repeatBtn = document.getElementById('repeatBtn');
 const repeatSelect = document.getElementById('repeatSelect');
 if (repeatBtn && repeatSelect) {
   repeatBtn.addEventListener('click', () => {
-    repeatSelect.style.display = repeatSelect.style.display === 'none' ? 'inline-block' : 'none';
+    if (repeatSelect.style.display === 'none' || repeatSelect.style.display === '') {
+      repeatSelect.style.display = 'inline-block';
+      repeatSelect.disabled = false;
+      repeatSelect.focus();
+    } else {
+      repeatSelect.style.display = 'none';
+      repeatSelect.disabled = true;
+    }
   });
+  // セレクトボックスが表示されたら選択可能に
+  repeatSelect.addEventListener('blur', () => {
+    // 何も選ばずにフォーカス外れたら閉じる
+    setTimeout(() => {
+      if (document.activeElement !== repeatSelect) {
+        repeatSelect.style.display = 'none';
+        repeatSelect.disabled = true;
+      }
+    }, 200);
+  });
+  // 選択したら自動で閉じる
+  repeatSelect.addEventListener('change', () => {
+    repeatSelect.style.display = 'none';
+    repeatSelect.disabled = true;
+  });
+  // 初期状態は非表示・無効
+  repeatSelect.style.display = 'none';
+  repeatSelect.disabled = true;
 }
 
 // すべてのリマインダーの通知を再スケジューリング
