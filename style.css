@@ -1,3 +1,52 @@
+/* カレンダー用スタイル */
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  background: rgba(230,245,255,0.97);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px #b3e0f7;
+  font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
+}
+.calendar-table th, .calendar-table td {
+  border: 1px solid #e0e7fa;
+  padding: 6px 4px;
+  text-align: left;
+  background: rgba(255,255,255,0.88);
+  min-width: 70px;
+  min-height: 50px;
+  vertical-align: top;
+}
+.calendar-table th {
+  background: #b3e0f7;
+  color: #3a7bd5;
+  font-weight: 700;
+  font-size: 1.01em;
+}
+.cal-date {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #1976d2;
+  margin-bottom: 2px;
+}
+.cal-task {
+  background: #eaf6fb;
+  border-left: 4px solid #4f8cff;
+  border-radius: 6px;
+  margin: 2px 0 4px 0;
+  padding: 2px 6px 2px 6px;
+  font-size: 0.98em;
+  color: #1976d2;
+  word-break: break-all;
+}
+.cal-task-title {
+  font-weight: 700;
+}
+.cal-task-memo {
+  font-size: 0.93em;
+  color: #4f8cff;
+}
 /* 画面内通知 */
 .inpage-notify {
   position: fixed;

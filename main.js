@@ -21,18 +21,40 @@ function saveReminders() {
 }
 
 // テーブルを更新
-function renderTable() {
-  const tbody = document.querySelector('#reminderTable tbody');
-  tbody.innerHTML = '';
-  reminders.forEach(rem => {
-    let repeatText = '';
-    if (rem.repeat === 'daily') repeatText = '（毎日）';
-    if (rem.repeat === 'weekly') repeatText = '（毎週）';
-    if (rem.repeat === 'yearly') repeatText = '（毎年）';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${rem.title}</td><td>${rem.dueDate.replace('T', ' ')}${repeatText}</td><td>${rem.memo || ''}</td>`;
-    tbody.appendChild(tr);
-  });
+// カレンダー描画
+function renderCalendar() {
+  const container = document.getElementById('calendarContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDay = firstDay.getDay();
+  const daysInMonth = lastDay.getDate();
+
+  // カレンダー表作成
+  let html = '<table class="calendar-table"><thead><tr>';
+  const weekDays = ['日','月','火','水','木','金','土'];
+  weekDays.forEach(d => html += `<th>${d}</th>`);
+  html += '</tr></thead><tbody><tr>';
+  for (let i = 0; i < startDay; i++) html += '<td></td>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayReminders = reminders.filter(rem => rem.dueDate && rem.dueDate.startsWith(dateStr));
+    html += '<td style="vertical-align:top;min-width:80px;min-height:60px;">';
+    html += `<div class="cal-date">${d}</div>`;
+    dayReminders.forEach(rem => {
+      html += `<div class="cal-task"><span class="cal-task-title">${rem.title}</span><br><span class="cal-task-memo">${rem.memo || ''}</span></div>`;
+    });
+    html += '</td>';
+    if ((startDay + d) % 7 === 0 && d !== daysInMonth) html += '</tr><tr>';
+  }
+  const remain = (startDay + daysInMonth) % 7;
+  if (remain !== 0) for (let i = remain; i < 7; i++) html += '<td></td>';
+  html += '</tr></tbody></table>';
+  container.innerHTML = html;
 }
 
 // リマインダー追加
@@ -45,7 +67,7 @@ function addReminder(e) {
   if (!title || !dueDate) return;
   reminders.push({ title, dueDate, memo, repeat });
   saveReminders();
-  renderTable();
+  renderCalendar();
   scheduleNotification({ title, dueDate, memo, repeat });
   e.target.reset();
   document.getElementById('repeatSelect').style.display = 'none';
@@ -70,7 +92,7 @@ function scheduleNotification(reminder) {
         const newReminder = { ...reminder, dueDate: nextDue.toISOString().slice(0,16) };
         reminders.push(newReminder);
         saveReminders();
-        renderTable();
+  renderCalendar();
         scheduleNotification(newReminder);
       }
     }, timeout);
@@ -159,5 +181,5 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // 初期化
 loadReminders();
-renderTable();
+renderCalendar();
 scheduleAllNotifications();
