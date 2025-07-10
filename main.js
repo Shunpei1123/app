@@ -3,6 +3,8 @@
 
 const STORAGE_KEY = 'reminders';
 let reminders = [];
+let calendarYear = (new Date()).getFullYear();
+let calendarMonth = (new Date()).getMonth();
 
 // 通知許可をリクエスト
 if (window.Notification && Notification.permission !== 'granted') {
@@ -24,15 +26,16 @@ function saveReminders() {
 // カレンダー描画
 function renderCalendar() {
   const container = document.getElementById('calendarContainer');
+  const monthLabel = document.getElementById('calendarMonthLabel');
   if (!container) return;
   container.innerHTML = '';
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
+  const year = calendarYear;
+  const month = calendarMonth;
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const startDay = firstDay.getDay();
   const daysInMonth = lastDay.getDate();
+  if (monthLabel) monthLabel.textContent = `${year}年${month+1}月`;
 
   // カレンダー表作成
   let html = '<table class="calendar-table"><thead><tr>';
@@ -43,10 +46,10 @@ function renderCalendar() {
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const dayReminders = reminders.filter(rem => rem.dueDate && rem.dueDate.startsWith(dateStr));
-    html += '<td style="vertical-align:top;min-width:80px;min-height:60px;">';
+    html += `<td class="cal-cell" data-date="${dateStr}" style="vertical-align:top;min-width:80px;min-height:60px;cursor:pointer;">`;
     html += `<div class="cal-date">${d}</div>`;
-    dayReminders.forEach(rem => {
-      html += `<div class="cal-task"><span class="cal-task-title">${rem.title}</span><br><span class="cal-task-memo">${rem.memo || ''}</span></div>`;
+    dayReminders.forEach((rem, idx) => {
+      html += `<div class="cal-task" data-task-idx="${reminders.indexOf(rem)}"><span class="cal-task-title">${rem.title}</span><br><span class="cal-task-memo">${rem.memo || ''}</span></div>`;
     });
     html += '</td>';
     if ((startDay + d) % 7 === 0 && d !== daysInMonth) html += '</tr><tr>';
@@ -55,6 +58,98 @@ function renderCalendar() {
   if (remain !== 0) for (let i = remain; i < 7; i++) html += '<td></td>';
   html += '</tr></tbody></table>';
   container.innerHTML = html;
+
+  // 日付クリックで詳細表示
+  document.querySelectorAll('.cal-cell').forEach(cell => {
+    cell.addEventListener('click', (e) => {
+      const date = cell.getAttribute('data-date');
+      const tasks = reminders.filter(rem => rem.dueDate && rem.dueDate.startsWith(date));
+      showTaskDetailModal(date, tasks);
+    });
+  });
+}
+// 月切り替え
+const prevMonthBtn = document.getElementById('prevMonthBtn');
+const nextMonthBtn = document.getElementById('nextMonthBtn');
+if (prevMonthBtn && nextMonthBtn) {
+  prevMonthBtn.addEventListener('click', () => {
+    calendarMonth--;
+    if (calendarMonth < 0) {
+      calendarMonth = 11;
+      calendarYear--;
+    }
+    renderCalendar();
+  });
+  nextMonthBtn.addEventListener('click', () => {
+    calendarMonth++;
+    if (calendarMonth > 11) {
+      calendarMonth = 0;
+      calendarYear++;
+    }
+    renderCalendar();
+  });
+}
+// 課題詳細モーダル
+function showTaskDetailModal(date, tasks) {
+  const modal = document.getElementById('taskDetailModal');
+  const content = document.getElementById('taskDetailContent');
+  if (!modal || !content) return;
+  let html = `<div style="font-weight:600;color:#1976d2;margin-bottom:8px;">${date.replace(/-/g,'/')} の課題</div>`;
+  if (tasks.length === 0) {
+    html += '<div>課題はありません。</div>';
+  } else {
+    tasks.forEach((rem, idx) => {
+      html += `<div class="modal-task-block" style="margin-bottom:16px;">
+        <div><b>課題名:</b> <span class="modal-task-title">${rem.title}</span></div>
+        <div><b>提出日時:</b> ${rem.dueDate.replace('T',' ')}</div>
+        <div><b>メモ:</b> ${rem.memo || ''}</div>
+        <div style="margin-top:8px;">
+          <button class="edit-task-btn" data-task-idx="${reminders.indexOf(rem)}" style="background:#4f8cff;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">編集</button>
+        </div>
+      </div>`;
+    });
+  }
+  content.innerHTML = html;
+  modal.style.display = 'block';
+
+  // 編集ボタン
+  content.querySelectorAll('.edit-task-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = btn.getAttribute('data-task-idx');
+      showEditTaskModal(idx);
+    });
+  });
+}
+
+// モーダル閉じる
+const closeTaskDetail = document.getElementById('closeTaskDetail');
+if (closeTaskDetail) {
+  closeTaskDetail.addEventListener('click', () => {
+    document.getElementById('taskDetailModal').style.display = 'none';
+  });
+}
+
+// 課題編集モーダル
+function showEditTaskModal(idx) {
+  const modal = document.getElementById('taskDetailModal');
+  const content = document.getElementById('taskDetailContent');
+  if (!modal || !content) return;
+  const rem = reminders[idx];
+  let html = `<div style="font-weight:600;color:#1976d2;margin-bottom:8px;">課題編集</div>`;
+  html += `<div style="margin-bottom:8px;"><label>課題名:<br><input id="editTitle" type="text" value="${rem.title}" style="width:90%;padding:4px;"></label></div>`;
+  html += `<div style="margin-bottom:8px;"><label>提出日時:<br><input id="editDueDate" type="datetime-local" value="${rem.dueDate}" style="width:90%;padding:4px;"></label></div>`;
+  html += `<div style="margin-bottom:8px;"><label>メモ:<br><input id="editMemo" type="text" value="${rem.memo || ''}" style="width:90%;padding:4px;"></label></div>`;
+  html += `<button id="saveEditTaskBtn" style="background:#4f8cff;color:#fff;border:none;border-radius:6px;padding:6px 18px;cursor:pointer;">保存</button>`;
+  content.innerHTML = html;
+  // 保存ボタン
+  document.getElementById('saveEditTaskBtn').onclick = function() {
+    rem.title = document.getElementById('editTitle').value.trim();
+    rem.dueDate = document.getElementById('editDueDate').value;
+    rem.memo = document.getElementById('editMemo').value.trim();
+    saveReminders();
+    renderCalendar();
+    modal.style.display = 'none';
+  };
 }
 
 // リマインダー追加

@@ -37,8 +37,19 @@
       <button type="submit">＋追加</button>
     </form>
     <h2>カレンダー</h2>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;">
+      <button id="prevMonthBtn" type="button" style="background:#4f8cff;color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:1em;">◀</button>
+      <span id="calendarMonthLabel" style="font-size:1.1em;font-weight:600;color:#1976d2;"></span>
+      <button id="nextMonthBtn" type="button" style="background:#4f8cff;color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:1em;">▶</button>
+    </div>
     <div id="calendarContainer"></div>
-    <p class="note">※リマインド通知を受け取るには、ブラウザの通知を許可してください。</p>
+    <div id="taskDetailModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span class="close-modal" id="closeTaskDetail">&times;</span>
+        <div id="taskDetailContent"></div>
+      </div>
+    </div>
+    <!-- <p class="note">※リマインド通知を受け取るには、ブラウザの通知を許可してください。</p> -->
   </div>
   <script src="main.js"></script>
 </body>
