@@ -29,15 +29,16 @@ body {
   from { transform: translateY(60px) scale(0.97); opacity: 0; }
   to { transform: translateY(0) scale(1); opacity: 1; }
 }
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Zen+Kaku+Gothic+New:wght@500&family=Pacifico&display=swap');
 h1 {
   text-align: center;
   color: #3a7bd5;
   letter-spacing: 0.09em;
   margin-bottom: 18px;
   text-shadow: 0 2px 12px #b3e0f7;
-  font-family: 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
+  font-family: 'Pacifico', 'Quicksand', 'Zen Kaku Gothic New', 'Meiryo', sans-serif;
   font-weight: 700;
-  font-size: 2.1em;
+  font-size: 2.2em;
   animation: fadein-title 1.2s cubic-bezier(.4,0,.2,1);
 }
 
