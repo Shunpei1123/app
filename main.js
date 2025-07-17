@@ -43,35 +43,7 @@ function renderCalendar() {
   weekDays.forEach(d => html += `<th>${d}</th>`);
   html += '</tr></thead><tbody><tr>';
   for (let i = 0; i < startDay; i++) html += '<td></td>';
-  // 繰り返し課題も含めて、当月に表示する課題を集計
-  function getRemindersForDate(dateStr) {
-    // 通常課題
-    let result = reminders.filter(rem => rem.dueDate && rem.dueDate.startsWith(dateStr));
-    // 繰り返し課題
-    reminders.forEach(rem => {
-      if (!rem.dueDate || !rem.repeat || rem.repeat === 'none') return;
-      let base = new Date(rem.dueDate);
-      let target = new Date(dateStr);
-      // 日付部分のみ比較
-      if (rem.repeat === 'daily') {
-        // base <= target && (target - base) % 1日 === 0
-        if (target >= base) {
-          const diff = (target - base) / (1000*60*60*24);
-          if (Number.isInteger(diff)) result.push(rem);
-        }
-      } else if (rem.repeat === 'weekly') {
-        if (target >= base) {
-          const diff = (target - base) / (1000*60*60*24);
-          if (Number.isInteger(diff) && diff % 7 === 0) result.push(rem);
-        }
-      } else if (rem.repeat === 'yearly') {
-        if (target >= base && base.getDate() === target.getDate() && base.getMonth() === target.getMonth()) {
-          result.push(rem);
-        }
-      }
-    });
-    return result;
-  }
+  // ...existing code...
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const dayReminders = getRemindersForDate(dateStr);
@@ -92,35 +64,40 @@ function renderCalendar() {
   document.querySelectorAll('.cal-cell').forEach(cell => {
     cell.addEventListener('click', (e) => {
       const date = cell.getAttribute('data-date');
-  // 繰り返し課題も含めて取得
-  function getRemindersForDate(dateStr) {
-    let result = reminders.filter(rem => rem.dueDate && rem.dueDate.startsWith(dateStr));
-    reminders.forEach(rem => {
-      if (!rem.dueDate || !rem.repeat || rem.repeat === 'none') return;
-      let base = new Date(rem.dueDate);
-      let target = new Date(dateStr);
-      if (rem.repeat === 'daily') {
-        if (target >= base) {
-          const diff = (target - base) / (1000*60*60*24);
-          if (Number.isInteger(diff)) result.push(rem);
-        }
-      } else if (rem.repeat === 'weekly') {
-        if (target >= base) {
-          const diff = (target - base) / (1000*60*60*24);
-          if (Number.isInteger(diff) && diff % 7 === 0) result.push(rem);
-        }
-      } else if (rem.repeat === 'yearly') {
-        if (target >= base && base.getDate() === target.getDate() && base.getMonth() === target.getMonth()) {
-          result.push(rem);
-        }
-      }
-    });
-    return result;
-  }
-  const tasks = getRemindersForDate(date);
+      const tasks = getRemindersForDate(date);
       showTaskDetailModal(date, tasks);
     });
   });
+// 繰り返し課題も含めて、当日表示する課題を集計（関数を外に定義）
+function getRemindersForDate(dateStr) {
+  let result = reminders.filter(rem => rem.dueDate && rem.dueDate.startsWith(dateStr));
+  reminders.forEach(rem => {
+    if (!rem.dueDate || !rem.repeat || rem.repeat === 'none') return;
+    let base = new Date(rem.dueDate);
+    let target = new Date(dateStr);
+    // 毎日
+    if (rem.repeat === 'daily') {
+      if (target >= base) {
+        const diff = (target - base) / (1000*60*60*24);
+        if (Number.isInteger(diff)) result.push(rem);
+      }
+    }
+    // 毎週
+    else if (rem.repeat === 'weekly') {
+      if (target >= base && target.getDay() === base.getDay()) {
+        const diff = (target - base) / (1000*60*60*24);
+        if (diff % 7 === 0) result.push(rem);
+      }
+    }
+    // 毎年
+    else if (rem.repeat === 'yearly') {
+      if (target >= base && base.getDate() === target.getDate() && base.getMonth() === target.getMonth()) {
+        result.push(rem);
+      }
+    }
+  });
+  return result;
+}
 }
 // 月切り替え
 const prevMonthBtn = document.getElementById('prevMonthBtn');
