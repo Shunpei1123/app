@@ -166,7 +166,7 @@ function showTaskDetailModal(date, tasks) {
       if (!rem.repeat || rem.repeat === 'none') {
         reminders.splice(idx, 1);
       } else {
-        // 繰り返し課題はこの日だけ削除（dueDate完全一致で判定）
+        // 繰り返し課題はこの日だけ削除（タイトル・repeat・dueDate完全一致のみ削除）
         reminders = reminders.filter(r => !(r.title === rem.title && r.repeat === rem.repeat && r.dueDate === rem.dueDate));
       }
       saveReminders();
