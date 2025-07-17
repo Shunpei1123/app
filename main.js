@@ -43,7 +43,6 @@ function renderCalendar() {
   weekDays.forEach(d => html += `<th>${d}</th>`);
   html += '</tr></thead><tbody><tr>';
   for (let i = 0; i < startDay; i++) html += '<td></td>';
-  // ...existing code...
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const dayReminders = getRemindersForDate(dateStr);
@@ -68,35 +67,34 @@ function renderCalendar() {
       showTaskDetailModal(date, tasks);
     });
   });
+}
 // 繰り返し課題も含めて、当日表示する課題を集計（関数を外に定義）
 function getRemindersForDate(dateStr) {
-  let result = reminders.filter(rem => rem.dueDate && rem.dueDate.startsWith(dateStr));
-  reminders.forEach(rem => {
-    if (!rem.dueDate || !rem.repeat || rem.repeat === 'none') return;
+  let result = reminders.filter(rem => {
+    // 通常課題
+    if (!rem.repeat || rem.repeat === 'none') {
+      return rem.dueDate && rem.dueDate.startsWith(dateStr);
+    }
+    // 繰り返し課題
     let base = new Date(rem.dueDate);
     let target = new Date(dateStr);
-    // 毎日
+    // 除外日
+    if (rem.excludeDates && rem.excludeDates.includes(dateStr)) return false;
+    // 終了日
+    if (rem.repeatEndDate && target > new Date(rem.repeatEndDate)) return false;
     if (rem.repeat === 'daily') {
       if (target >= base) {
         const diff = (target - base) / (1000*60*60*24);
-        if (Number.isInteger(diff)) result.push(rem);
+        if (Number.isInteger(diff)) return true;
       }
+    } else if (rem.repeat === 'weekly') {
+      if (target >= base && target.getDay() === base.getDay()) return true;
+    } else if (rem.repeat === 'yearly') {
+      if (target >= base && base.getDate() === target.getDate() && base.getMonth() === target.getMonth()) return true;
     }
-    // 毎週
-    else if (rem.repeat === 'weekly') {
-      if (target >= base && target.getDay() === base.getDay()) {
-        result.push(rem);
-      }
-    }
-    // 毎年
-    else if (rem.repeat === 'yearly') {
-      if (target >= base && base.getDate() === target.getDate() && base.getMonth() === target.getMonth()) {
-        result.push(rem);
-      }
-    }
+    return false;
   });
   return result;
-}
 }
 // 月切り替え
 const prevMonthBtn = document.getElementById('prevMonthBtn');
@@ -161,11 +159,15 @@ function showTaskDetailModal(date, tasks) {
     btn.addEventListener('click', (e) => {
       const idx = Number(btn.getAttribute('data-task-idx'));
       const rem = reminders[idx];
-      // タイトル・repeat・memo・dueDate完全一致のみ削除
-      reminders = reminders.filter(r => {
-        return !(r.title === rem.title && r.repeat === rem.repeat && r.memo === rem.memo && r.dueDate === rem.dueDate);
-      });
-      saveReminders();
+      const dateStr = date;
+      if (!rem.repeat || rem.repeat === 'none') {
+        reminders.splice(idx, 1);
+      } else {
+        // 除外日リストに追加
+        if (!rem.excludeDates) rem.excludeDates = [];
+        if (!rem.excludeDates.includes(dateStr)) rem.excludeDates.push(dateStr);
+        saveReminders();
+      }
       renderCalendar();
       document.getElementById('taskDetailModal').style.display = 'none';
     });
@@ -175,11 +177,10 @@ function showTaskDetailModal(date, tasks) {
     btn.addEventListener('click', (e) => {
       const idx = Number(btn.getAttribute('data-task-idx'));
       const rem = reminders[idx];
-      // タイトル・repeat・memo一致、dueDateが選択課題以降のものを削除
-      reminders = reminders.filter(r => {
-        if (r.title !== rem.title || r.repeat !== rem.repeat || r.memo !== rem.memo) return true;
-        return new Date(r.dueDate) < new Date(rem.dueDate);
-      });
+      // repeatEndDateを選択日（date）の前日に設定
+      let endDate = new Date(date);
+      endDate.setDate(endDate.getDate() - 1);
+      rem.repeatEndDate = endDate.toISOString().slice(0,10);
       saveReminders();
       renderCalendar();
       document.getElementById('taskDetailModal').style.display = 'none';
@@ -226,7 +227,7 @@ function addReminder(e) {
   const memo = document.getElementById('memo').value.trim();
   const repeat = document.getElementById('repeatSelect').value;
   if (!title || !dueDate) return;
-  reminders.push({ title, dueDate, memo, repeat });
+  reminders.push({ title, dueDate, memo, repeat, excludeDates: [], repeatEndDate: null });
   saveReminders();
   renderCalendar();
   scheduleNotification({ title, dueDate, memo, repeat });
