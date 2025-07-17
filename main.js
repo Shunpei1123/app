@@ -156,37 +156,28 @@ function showTaskDetailModal(date, tasks) {
       showEditTaskModal(idx);
     });
   });
-  // 削除ボタン（単一）
+  // 「この課題のみ削除」ボタン
   content.querySelectorAll('.delete-task-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const idx = Number(btn.getAttribute('data-task-idx'));
-      const date = btn.getAttribute('data-task-date');
-      // 通常課題 or 繰り返し課題のこの日だけ削除
       const rem = reminders[idx];
-      if (!rem.repeat || rem.repeat === 'none') {
-        reminders.splice(idx, 1);
-      } else {
-        // 「この課題のみ削除」: タイトル・repeat・dueDate・memo完全一致のみ削除
-        reminders = reminders.filter(r => {
-          if (r.title !== rem.title || r.repeat !== rem.repeat || r.memo !== rem.memo) return true;
-          return r.dueDate !== rem.dueDate;
-        });
-      }
+      // タイトル・repeat・memo・dueDate完全一致のみ削除
+      reminders = reminders.filter(r => {
+        return !(r.title === rem.title && r.repeat === rem.repeat && r.memo === rem.memo && r.dueDate === rem.dueDate);
+      });
       saveReminders();
       renderCalendar();
       document.getElementById('taskDetailModal').style.display = 'none';
     });
   });
-  // 今後の課題も削除ボタン
+  // 「今後の課題を削除」ボタン
   content.querySelectorAll('.delete-task-future-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const idx = Number(btn.getAttribute('data-task-idx'));
-      const date = btn.getAttribute('data-task-date');
       const rem = reminders[idx];
-      // 繰り返し課題の今後分を削除（開始日以降、タイトル・repeat一致）
+      // タイトル・repeat・memo一致、dueDateが選択課題以降のものを削除
       reminders = reminders.filter(r => {
         if (r.title !== rem.title || r.repeat !== rem.repeat || r.memo !== rem.memo) return true;
-        // 「今後の課題を削除」: 選択日より前の課題は残す（選択日以降は削除）
         return new Date(r.dueDate) < new Date(rem.dueDate);
       });
       saveReminders();
