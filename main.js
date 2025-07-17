@@ -133,10 +133,17 @@ function showTaskDetailModal(date, tasks) {
         <div><b>課題名:</b> <span class="modal-task-title">${rem.title}</span></div>
         <div><b>提出日時:</b> ${rem.dueDate.replace('T',' ')}</div>
         <div><b>メモ:</b> ${rem.memo || ''}</div>
-        <div style="margin-top:8px;">
+        <div style="margin-top:8px;display:flex;gap:8px;">
           <button class="edit-task-btn" data-task-idx="${reminders.indexOf(rem)}" style="background:#4f8cff;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">編集</button>
-        </div>
-      </div>`;
+          <button class="delete-task-btn" data-task-idx="${reminders.indexOf(rem)}" data-task-date="${date}" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">削除</button>
+        </div>`;
+      // 繰り返し課題の場合は追加ボタン
+      if (rem.repeat && rem.repeat !== 'none') {
+        html += `<div style="margin-top:6px;display:flex;gap:8px;">
+          <button class="delete-task-future-btn" data-task-idx="${reminders.indexOf(rem)}" data-task-date="${date}" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">今後の課題も削除</button>
+        </div>`;
+      }
+      html += `</div>`;
     });
   }
   content.innerHTML = html;
@@ -147,6 +154,40 @@ function showTaskDetailModal(date, tasks) {
     btn.addEventListener('click', (e) => {
       const idx = btn.getAttribute('data-task-idx');
       showEditTaskModal(idx);
+    });
+  });
+  // 削除ボタン（単一）
+  content.querySelectorAll('.delete-task-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = Number(btn.getAttribute('data-task-idx'));
+      const date = btn.getAttribute('data-task-date');
+      // 通常課題 or 繰り返し課題のこの日だけ削除
+      const rem = reminders[idx];
+      if (!rem.repeat || rem.repeat === 'none') {
+        reminders.splice(idx, 1);
+      } else {
+        // 繰り返し課題はこの日だけ削除（この日付の課題を一意に判定）
+        reminders = reminders.filter(r => !(r.title === rem.title && r.dueDate.startsWith(date) && r.repeat === rem.repeat));
+      }
+      saveReminders();
+      renderCalendar();
+      document.getElementById('taskDetailModal').style.display = 'none';
+    });
+  });
+  // 今後の課題も削除ボタン
+  content.querySelectorAll('.delete-task-future-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = Number(btn.getAttribute('data-task-idx'));
+      const date = btn.getAttribute('data-task-date');
+      const rem = reminders[idx];
+      // 繰り返し課題の今後分を削除（開始日以降、タイトル・repeat一致）
+      reminders = reminders.filter(r => {
+        if (r.title !== rem.title || r.repeat !== rem.repeat) return true;
+        return new Date(r.dueDate) < new Date(date);
+      });
+      saveReminders();
+      renderCalendar();
+      document.getElementById('taskDetailModal').style.display = 'none';
     });
   });
 }
