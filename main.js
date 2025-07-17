@@ -82,15 +82,17 @@ function getRemindersForDate(dateStr) {
     if (rem.excludeDates && rem.excludeDates.includes(dateStr)) return false;
     // 終了日
     if (rem.repeatEndDate && target > new Date(rem.repeatEndDate)) return false;
+    // 初回日も必ず表示
+    if (target.getTime() === base.getTime()) return true;
     if (rem.repeat === 'daily') {
-      if (target >= base) {
+      if (target > base) {
         const diff = (target - base) / (1000*60*60*24);
         if (Number.isInteger(diff)) return true;
       }
     } else if (rem.repeat === 'weekly') {
-      if (target >= base && target.getDay() === base.getDay()) return true;
+      if (target > base && target.getDay() === base.getDay()) return true;
     } else if (rem.repeat === 'yearly') {
-      if (target >= base && base.getDate() === target.getDate() && base.getMonth() === target.getMonth()) return true;
+      if (target > base && base.getDate() === target.getDate() && base.getMonth() === target.getMonth()) return true;
     }
     return false;
   });
