@@ -166,8 +166,11 @@ function showTaskDetailModal(date, tasks) {
       if (!rem.repeat || rem.repeat === 'none') {
         reminders.splice(idx, 1);
       } else {
-        // 繰り返し課題はこの日だけ削除（タイトル・repeat・dueDate完全一致のみ削除）
-        reminders = reminders.filter(r => !(r.title === rem.title && r.repeat === rem.repeat && r.dueDate === rem.dueDate && r.memo === rem.memo));
+        // 「この課題のみ削除」: タイトル・repeat・dueDate・memo完全一致のみ削除
+        reminders = reminders.filter(r => {
+          if (r.title !== rem.title || r.repeat !== rem.repeat || r.memo !== rem.memo) return true;
+          return r.dueDate !== rem.dueDate;
+        });
       }
       saveReminders();
       renderCalendar();
@@ -183,7 +186,7 @@ function showTaskDetailModal(date, tasks) {
       // 繰り返し課題の今後分を削除（開始日以降、タイトル・repeat一致）
       reminders = reminders.filter(r => {
         if (r.title !== rem.title || r.repeat !== rem.repeat || r.memo !== rem.memo) return true;
-        // 選択日より前の課題は残す（選択日以降は削除）
+        // 「今後の課題を削除」: 選択日より前の課題は残す（選択日以降は削除）
         return new Date(r.dueDate) < new Date(rem.dueDate);
       });
       saveReminders();
