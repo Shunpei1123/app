@@ -85,8 +85,7 @@ function getRemindersForDate(dateStr) {
     // 毎週
     else if (rem.repeat === 'weekly') {
       if (target >= base && target.getDay() === base.getDay()) {
-        const diff = (target - base) / (1000*60*60*24);
-        if (diff % 7 === 0) result.push(rem);
+        result.push(rem);
       }
     }
     // 毎年
