@@ -345,3 +345,73 @@ window.addEventListener('DOMContentLoaded', () => {
 loadReminders();
 renderCalendar();
 scheduleAllNotifications();
+renderWeeklySummary();
+
+// 直近1週間の課題を抽出して表示
+function renderWeeklySummary() {
+  const summaryContainerId = 'weeklySummaryContainer';
+  let container = document.getElementById(summaryContainerId);
+  if (!container) {
+    container = document.createElement('div');
+    container.id = summaryContainerId;
+    container.style.margin = '32px auto 0 auto';
+    container.style.maxWidth = '600px';
+    container.style.background = '#f7f7fa';
+    container.style.borderRadius = '12px';
+    container.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+    container.style.padding = '20px 24px';
+    container.style.fontSize = '1.08em';
+    container.style.color = '#333';
+    container.style.textAlign = 'left';
+    document.body.appendChild(container);
+  }
+  // 今日から7日間
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const weekDates = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    weekDates.push(d.toISOString().slice(0,10));
+  }
+  // 各日付ごとに課題を集計
+  let weeklyTasks = [];
+  weekDates.forEach(dateStr => {
+    const tasks = getRemindersForDate(dateStr);
+    tasks.forEach(rem => {
+      // 重複表示防止（同じ課題名・締切・繰り返し種別で一意化）
+      const key = rem.title + rem.dueDate + (rem.repeat||'');
+      if (!weeklyTasks.some(t => t.title + t.dueDate + (t.repeat||'') === key)) {
+        weeklyTasks.push({
+          ...rem,
+          date: dateStr
+        });
+      }
+    });
+  });
+  // 表示内容生成
+  let html = `<div style="font-weight:700;font-size:1.15em;color:#1976d2;margin-bottom:10px;">直近1週間の課題まとめ</div>`;
+  if (weeklyTasks.length === 0) {
+    html += `<div style="color:#888;">今週締切の課題はありません。</div>`;
+  } else {
+    html += `<ul style="padding-left:1.2em;">`;
+    weeklyTasks.sort((a,b) => a.dueDate.localeCompare(b.dueDate));
+    weeklyTasks.forEach(rem => {
+      html += `<li style="margin-bottom:10px;">
+        <span style="font-weight:600;color:#333;">${rem.title}</span>
+        <span style="color:#1976d2;">（${rem.dueDate.replace('T',' ')} 締切）</span>
+        ${rem.memo ? `<span style="color:#666;"> - ${rem.memo}</span>` : ''}
+        ${rem.repeat && rem.repeat !== 'none' ? `<span style="background:#ffe0b2;color:#b26a00;border-radius:6px;padding:2px 8px;margin-left:8px;font-size:0.95em;">繰り返し: ${repeatTextMap[rem.repeat]}</span>` : ''}
+      </li>`;
+    });
+    html += `</ul>`;
+  }
+  container.innerHTML = html;
+}
+
+// カレンダーや課題追加・編集時にも週まとめを更新
+const _oldRenderCalendar = renderCalendar;
+renderCalendar = function() {
+  _oldRenderCalendar.apply(this, arguments);
+  renderWeeklySummary();
+};
